@@ -42,15 +42,6 @@ Output figures are saved to a `figs/` subdirectory. Create this before running t
 dir.create("figs")
 ```
 
----
-
-## Data Filtering
-
-Prior to analysis, subjects are filtered to meet the following criteria:
-
-- Age ≤ 24 months at time of recording
-
----
 
 ## Statistical Models
 
