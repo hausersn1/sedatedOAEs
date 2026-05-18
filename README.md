@@ -33,7 +33,6 @@ The following input files are required and should be placed in the same director
 | `sfoae_data.csv` | SFOAE amplitude and phase measurements for all subjects |
 | `dpoae_data.csv` | DPOAE amplitude and noise floor measurements for all subjects |
 | `chin_info.csv` | Subject metadata including estimated age in months |
-| `Data_OAEcalib.csv` | Calibration data (absorbance, error metrics) for probe fit quality |
 | `singleChin.csv` | Single-animal example data for Figure 1 |
 | `Q443_TimePoints.csv` | Time-course DPOAE and SFOAE data for subject Q443 (Figures 6–7) |
 | `Q443_Qerb_TimePoints.csv` | Time-course Qerb data for subject Q443 (Figure 7) |
@@ -50,9 +49,6 @@ dir.create("figs")
 Prior to analysis, subjects are filtered to meet the following criteria:
 
 - Age ≤ 24 months at time of recording
-- DPOAE and SFOAE calibration error < 10 for both probe measurements
-- Absorbance between -1 and 0.5 for both probe measurements
-- Subject must have both an Awake and a Sedated session
 
 ---
 
@@ -94,4 +90,4 @@ All figures are saved as TIFF at 600 dpi.
 
 ## Contact
 
-For questions about the code or data, please contact the corresponding author.
+For questions about the code or data, please contact the corresponding author, Samantha Hauser, samantha.hauser@pitt.edu.
