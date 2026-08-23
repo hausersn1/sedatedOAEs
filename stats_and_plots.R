@@ -36,6 +36,10 @@ mod_dp <- lmer(amp_dp ~ freqFactor * Sedated + (1|Subject), data = oae)
 mod_sf <- lmer(amp_sf ~ freqFactor * Sedated + (1|Subject), data = oae)
 mod_qerb <- lmer(qerb ~ freqFactor * Sedated + (1|Subject), data = oae)
 
+mod_dp2   <- lmer(amp_dp ~ freqFactor * Sedated + (1 + Sedated | Subject), data = oae)
+mod_sf2   <- lmer(amp_sf ~ freqFactor * Sedated + (1 + Sedated | Subject), data = oae)
+mod_qerb2   <- lmer(qerb ~ freqFactor * Sedated + (1 + Sedated | Subject), data = oae)
+
 # ANVOAs for each 
 Anova(mod_dp, test.statistic = 'F')
 Anova(mod_sf, test.statistic = 'F')
@@ -46,10 +50,18 @@ em_dp <- emmeans(mod_dp, ~  Sedated | freqFactor)
 em_sf <- emmeans(mod_sf, ~  Sedated | freqFactor)
 em_qerb <- emmeans(mod_qerb, ~  Sedated | freqFactor)
 
-# Save stats into datafram
-stats_dp <- as.data.frame(pairs(em_dp))
-stats_sf <- as.data.frame(pairs(em_sf))
-stats_qerb <- as.data.frame(pairs(em_qerb))
+# Save stats into dataframe
+stats_dp <- as.data.frame(pairs(em_dp, adjust = "none"))
+stats_sf <- as.data.frame(pairs(em_sf, adjust = "none"))
+stats_qerb <- as.data.frame(pairs(em_qerb, adjust = "none"))
+
+
+# Conservative Models
+mod_dp2   <- lmer(amp_dp ~ freqFactor * Sedated + (1 + Sedated | Subject), data = oae)
+
+Anova(mod_dp2, test.statistic = 'F')
+em_dp2 <- emmeans(mod_dp2, ~  Sedated | freqFactor)
+stats_dp2 <- as.data.frame(pairs(em_dp2, adjust = "none"))
 
 # Build significance labels -----------------------------------------------
 make_pval_labels <- function(stats_df) {
@@ -70,18 +82,22 @@ pval_dp   <- make_pval_labels(stats_dp)
 pval_sf   <- make_pval_labels(stats_sf)
 pval_qerb <- make_pval_labels(stats_qerb)
 
-# Figure 1: Single Chin ---------------------------------------------------
+
+# Plot Settings -----------------------------------------------------------
 
 # plot settings
 lw <- 1
-col_sed <- '#43a2ca'
+col_sed <- '#4393c3'
+col_awk <- '#d6604d'
+
+# Figure 1: Single Chin ---------------------------------------------------
 
 ## Fig. 1A — DPOAE
 oneChinDP <-
   ggplot(data = oneChin) +
-  geom_line(aes(x = freq, y = A_dpOAE), linewidth = lw) +
-  geom_line(aes(x = freq, y = S_dpOAE), linewidth = lw, color = col_sed, linetype = '3121') +
-  geom_line(aes(x = freq, y = A_dpNF),  linewidth = lw/2, linetype = 'solid') +
+  geom_line(aes(x = freq, y = A_dpOAE), linewidth = lw, color = col_awk) +
+  geom_line(aes(x = freq, y = S_dpOAE), linewidth = lw, color = col_sed, linetype = '2121') +
+  geom_line(aes(x = freq, y = A_dpNF),  linewidth = lw/2, color = col_awk, linetype = 'solid') +
   geom_line(aes(x = freq, y = S_dpNF),  linewidth = lw/2, color = col_sed, linetype = '2121') +
   xlab("Frequency (kHz)") +
   ylab("Amplitude (dB EPL)") +
@@ -97,9 +113,9 @@ oneChinDP <-
 ## Fig. 1B — SFOAE
 oneChinSF <-
   ggplot(data = oneChin) +
-  geom_line(aes(x = freq, y = A_sfOAE), linewidth = lw) +
-  geom_line(aes(x = freq, y = S_sfOAE), linewidth = lw, color = col_sed, linetype = '3121') +
-  geom_line(aes(x = freq, y = A_sfNF),  linewidth = lw/2, linetype = 'solid') +
+  geom_line(aes(x = freq, y = A_sfOAE), linewidth = lw, color = col_awk) +
+  geom_line(aes(x = freq, y = S_sfOAE), linewidth = lw, color = col_sed, linetype = '2121') +
+  geom_line(aes(x = freq, y = A_sfNF),  linewidth = lw/2, color = col_awk, linetype = 'solid') +
   geom_line(aes(x = freq, y = S_sfNF),  linewidth = lw/2, color = col_sed, linetype = '2121') +
   xlab("Frequency (kHz)") +
   ylab("Amplitude (dB EPL)") +
@@ -109,7 +125,7 @@ oneChinSF <-
                      breaks = c(.5, 1, 2, 4, 8, 12),
                      labels = c(".5", "1", "2", "4", "8", "12")) +
   annotate("text", x = 14, y = 47, label = "Awake",   size = 4, hjust = "right",
-           color = "#000000", family = "sans") +
+           color = col_awk, family = "sans") +
   annotate("text", x = 14, y = 37, label = "Sedated", size = 4, hjust = "right",
            color = col_sed, family = "sans") +
   theme_bw() +
@@ -146,7 +162,7 @@ dp_sum <- left_join(dp_sum, pval_dp %>% select(freq, significance), by = "freq")
 ## Fig. 2A — raw amplitudes awake and sedated
 Fig2a_DP <-
   ggplot(data = oae) +
-  geom_line(linewidth = .5, alpha = .1,
+  geom_line(linewidth = .5, alpha = .2,
             aes(x = freq, y = amp_dp, color = Sedated,
                 group = interaction(Subject, Sedated), linetype = Sedated)) +
   geom_line(linewidth = .75, data = dp_sum,
@@ -163,7 +179,7 @@ Fig2a_DP <-
                      breaks = c(.5, 1, 2, 4, 8, 12),
                      labels = c(".5", "1", "2", "4", "8", "12")) +
   scale_color_manual(name = "Status",
-                     values = c("Awake" = "black", "Sedated" = col_sed),
+                     values = c("Awake" = col_awk, "Sedated" = col_sed),
                      labels = c("Awake", "Sedated")) +
   scale_linetype_manual(name = "Status",
                         values = c("Awake" = "solid", "Sedated" = "3121"),
@@ -239,7 +255,7 @@ sf_sum <- left_join(sf_sum, pval_sf %>% select(freq, significance), by = "freq")
 ## Fig. 3A — raw amplitudes awake and sedated
 Fig2a_SF <-
   ggplot(data = oae) +
-  geom_line(linewidth = .5, alpha = .1,
+  geom_line(linewidth = .5, alpha = .2,
             aes(x = freq, y = amp_sf, color = Sedated,
                 group = interaction(Subject, Sedated), linetype = Sedated)) +
   geom_line(linewidth = .75, data = sf_sum,
@@ -256,7 +272,7 @@ Fig2a_SF <-
                      breaks = c(.5, 1, 2, 4, 8, 12),
                      labels = c(".5", "1", "2", "4", "8", "12")) +
   scale_color_manual(name = "Status",
-                     values = c("Awake" = "black", "Sedated" = col_sed),
+                     values = c("Awake" = col_awk, "Sedated" = col_sed),
                      labels = c("Awake", "Sedated")) +
   scale_linetype_manual(name = "Status",
                         values = c("Awake" = "solid", "Sedated" = "3121"),
@@ -331,7 +347,7 @@ qerb_sum <- left_join(qerb_sum, pval_qerb %>% select(freq, significance), by = "
 ## Fig. 4A — raw Qerb awake and sedated
 Fig3a_Qerb <-
   ggplot(data = oae) +
-  geom_line(linewidth = .5, alpha = .1,
+  geom_line(linewidth = .5, alpha = .2,
             aes(x = freq, y = qerb, color = Sedated,
                 group = interaction(Subject, Sedated), linetype = Sedated)) +
   geom_line(linewidth = .75, data = qerb_sum,
@@ -351,7 +367,7 @@ Fig3a_Qerb <-
                      breaks = c(.5, 1, 2, 3, 5, 10, 20)) +
   coord_cartesian(ylim = c(.5, 20)) +
   scale_color_manual(name = "Status",
-                     values = c("Awake" = "black", "Sedated" = col_sed),
+                     values = c("Awake" = col_awk, "Sedated" = col_sed),
                      labels = c("Awake", "Sedated")) +
   scale_linetype_manual(name = "Status",
                         values = c("Awake" = "solid", "Sedated" = "3121"),
@@ -676,17 +692,12 @@ ggarrange(phase443, Qfig443,
           align = "hv", 
           font.label = list(family = "sans"))
 
-ggsave("./figs/fig7.tiff",
+ggsave("./figs/ESM3.tiff",
        plot = last_plot(),
        width = 84,
        height = 100,
        units = "mm",
        dpi = 600)
-
-
-
-
-
 
 
 

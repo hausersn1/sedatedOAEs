@@ -17,10 +17,6 @@ The following packages must be installed prior to running the script:
 - `emmeans`
 - `ggpubr`
 
-Install all at once with:
-```r
-install.packages(c("tidyverse", "ggplot2", "lme4", "car", "emmeans", "ggpubr"))
-```
 
 ---
 
@@ -34,13 +30,11 @@ The following input files are required and should be placed in the same director
 | `dpoae_data.csv` | DPOAE amplitude and noise floor measurements for all subjects |
 | `chin_info.csv` | Subject metadata including estimated age in months |
 | `singleChin.csv` | Single-animal example data for Figure 1 |
-| `Q443_TimePoints.csv` | Time-course DPOAE and SFOAE data for subject Q443 (Figures 6–7) |
-| `Q443_Qerb_TimePoints.csv` | Time-course Qerb data for subject Q443 (Figure 7) |
+| `Q443_TimePoints.csv` | Time-course DPOAE and SFOAE data for subject Q443 (ESM3) |
+| `Q443_Qerb_TimePoints.csv` | Time-course Qerb data for subject Q443 (ESM3) |
 
-Output figures are saved to a `figs/` subdirectory. Create this before running the script:
-```r
-dir.create("figs")
-```
+Output figures are saved to a `figs/` subdirectory which should be created before running the script. 
+
 
 
 ## Statistical Models
@@ -72,8 +66,7 @@ Applied separately for DPOAE amplitude, SFOAE amplitude, and Qerb.
 | Figure 3 | SFOAE amplitude awake vs. sedated (A) and sedation difference (B) | `figs/fig3.tiff` |
 | Figure 4 | Qerb awake vs. sedated (A) and sedation difference (B) | `figs/fig4.tiff` |
 | Figure 5 | Sedation difference by sex for DPOAE (A), SFOAE (B), and Qerb (C) | `figs/fig5.tiff` |
-| Figure 6 | DPOAE (A) and SFOAE (B) across time points under sedation for subject Q443 | `figs/fig6.tiff` |
-| Figure 7 | SFOAE phase (A) and Qerb (B) across time points under sedation for subject Q443 | `figs/fig7.tiff` |
+
 
 All figures are saved as TIFF at 600 dpi.
 
@@ -81,4 +74,4 @@ All figures are saved as TIFF at 600 dpi.
 
 ## Contact
 
-For questions about the code or data, please contact the corresponding author, Samantha Hauser, samantha.hauser@pitt.edu.
+For questions about the code or data, please contact Samantha Hauser, samantha.hauser@pitt.edu.
